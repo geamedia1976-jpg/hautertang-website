@@ -206,9 +206,15 @@
       if (rule.type === "fixed") {
         unitAmount = rule.amount; units = 1; amount = rule.amount;
       } else if (rule.type === "free") {
-        unitAmount = ""; units = 1; amount = "隨喜";
+        unitAmount = ""; units = 1;
         const freeAmt = prompt("禮敬上香為隨喜，請輸入本次金額（元，僅供紀錄）：", "");
-        if (freeAmt !== null && freeAmt.trim() !== "") { amount = freeAmt.trim() + " 元（隨喜）"; }
+        if (freeAmt !== null && freeAmt.trim() !== "") {
+          amount = freeAmt.trim();            // 純數字，便於月結統計
+          noteExtra = "（隨喜）";
+        } else {
+          amount = "0";
+          noteExtra = "（隨喜，未填金額）";
+        }
       } else if (rule.type === "unit") {
         const u = Math.max(1, parseInt(unitsInput.value || "1", 10));
         units = u; unitAmount = rule.unitAmount; amount = rule.unitAmount * u;
@@ -224,7 +230,7 @@
         單位數: units,
         單位金額: unitAmount,
         "本筆金額": amount,
-        備註: document.getElementById("note").value.trim(),
+        備註: (document.getElementById("note").value.trim() + " " + noteExtra).trim(),
         是否已匯款: "否"
       };
 

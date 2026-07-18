@@ -23,6 +23,13 @@ Google Apps Script Web App（你部署一次）
 
 ## 第一步：建立 Google 試算表
 
+**方式 A（最推薦，零設定）：直接上傳調整後的 Excel**
+1. 把本倉庫的 `浩德堂_植福田與供養月結系統_含公式版.xlsx` 上傳到 Google Drive。
+2. 在 Drive 中對該檔案按右鍵 →「開啟為」→「Google 試算表」。
+3. 這份已內建「月結總覽 / 每月公布摘要」的 SUMIFS 公式，表單資料進來後會自動結算。
+4. 記下網址 `https://docs.google.com/spreadsheets/d/【這段】/edit` 中的**試算表 ID**。
+
+**方式 B：從頭新建**
 1. 開啟 [Google 試算表](https://sheets.new) 新建一份。
 2. 將第一個工作表命名為 `明細紀錄`。
 3. 在第一列（標題列）填入以下欄位（順序需一致）：
@@ -32,7 +39,7 @@ Google Apps Script Web App（你部署一次）
    | 日期 | 月份 | 姓名／稱呼 | 聯絡方式 | 方向 | 項目 | 單位數 | 單位金額 | 本筆金額 | 備註 | 是否已匯款 |
 
 4. （選用）將《浩德堂_植福田與供養月結系統.xlsx》中的「月結總覽」「供養名單」
-   「每月公布摘要」三個工作表複製進來，即可自動統計。
+   「每月公布摘要」三個工作表複製進來，並於「月結總覽 / 每月公布摘要」填入 SUMIFS 公式。
 5. 記下這份試算表的 **試算表 ID**（網址 `https://docs.google.com/spreadsheets/d/【這段】/edit` 中括號處）。
 
 ---
@@ -57,6 +64,13 @@ function doPost(e) {
     const sheet = SpreadsheetApp.getActive().getSheetByName("明細紀錄");
     const data = JSON.parse(e.postData.contents);
 
+    // 將金額 / 單位數 / 單位金額轉為數字，否則試算表存成文字會導致 SUMIFS 加總不到
+    const toNum = (v) => {
+      if (v === "" || v == null) return "";
+      const n = Number(v);
+      return isNaN(n) ? v : n;
+    };
+
     const row = [
       data["日期"]        || "",
       data["月份"]        || "",
@@ -64,9 +78,9 @@ function doPost(e) {
       data["聯絡方式"]    || "",
       data["方向"]        || "",
       data["項目"]        || "",
-      data["單位數"]      || "",
-      data["單位金額"]    || "",
-      data["本筆金額"]    || "",
+      toNum(data["單位數"]),
+      toNum(data["單位金額"]),
+      toNum(data["本筆金額"]),
       data["備註"]        || "",
       data["是否已匯款"]  || "否"
     ];
