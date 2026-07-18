@@ -108,6 +108,57 @@ function doGet(e) {
 > 若你想確認回應，可將前端 `postToGAS` 改為一般 `fetch`（去掉 `no-cors`），但需將 GAS
 > 部署的「存取權」保持為「任何人」，且前端可能需處理 CORS。當前設定以「穩定寫入」為優先。
 
+### 替代做法：獨立 Apps Script 專案（當「擴充功能 → Apps Script」開不了時）
+
+若從試算表內的「擴充功能 → Apps Script」無法開啟（常見原因：公司／學校網域帳號停用 Apps Script），
+可直接到 [script.google.com](https://script.google.com) 建立**獨立專案**來部署，效果完全相同：
+
+1. 開啟 [script.google.com](https://script.google.com) →「新增專案」。
+2. 貼上下方**獨立版腳本**，並把 `SS_ID` 改成你的試算表 ID
+   （網址 `https://docs.google.com/spreadsheets/d/【這段】/edit` 中括號處）。
+3. 「部署」→「新增部署」→「網頁應用程式」：執行身分＝**我**、存取權＝**任何人**。
+4. 首次部署會要求授權（允許「存取 Google 試算表」），按流程同意即可。
+5. 複製產生的 Web App 網址，貼到 `js/config.js` 的 `GAS_URL`。
+
+```javascript
+// 浩德堂 接收端（獨立專案版，直接指定試算表 ID）
+function doPost(e) {
+  try {
+    const SS_ID = "請貼上你的試算表 ID";
+    const sheet = SpreadsheetApp.openById(SS_ID).getSheetByName("明細紀錄");
+
+    const toNum = (v) => {
+      if (v === "" || v == null) return "";
+      const n = Number(v);
+      return isNaN(n) ? v : n;
+    };
+    const data = JSON.parse(e.postData.contents);
+    const row = [
+      data["日期"]        || "",
+      data["月份"]        || "",
+      data["姓名／稱呼"]  || "",
+      data["聯絡方式"]    || "",
+      data["方向"]        || "",
+      data["項目"]        || "",
+      toNum(data["單位數"]),
+      toNum(data["單位金額"]),
+      toNum(data["本筆金額"]),
+      data["備註"]        || "",
+      data["是否已匯款"]  || "否"
+    ];
+    sheet.appendRow(row);
+    return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: String(err) }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function doGet(e) {
+  return ContentService.createTextOutput("浩德堂接收端已啟用。");
+}
+```
+
 ---
 
 ## 第三步：填入網站設定
