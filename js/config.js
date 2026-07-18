@@ -8,7 +8,7 @@ const SITE_CONFIG = {
      請將你部署的 Google Apps Script Web App 網址貼到下方。
      部署方式詳見《README_GoogleDrive整合說明.md》。
      若留空（""），表單送出時會改為本機暫存並提示尚未連接。 */
-  GAS_URL: "",
+  GAS_URL: "https://script.google.com/macros/s/AKfycbzpbNX6MSjb-Hk6A4E1k1byFaF1XM2wf8U7ysZEoiyQZ4r_7xebHff57ChQHdp3pnlz/exec",
 
   /* ---------- 聯絡方式（顯示於「聯絡承接」頁） ---------- */
   CONTACT: {
