@@ -125,14 +125,23 @@ function doGet(e) {
 function doPost(e) {
   try {
     const SS_ID = "請貼上你的試算表 ID";
-    const sheet = SpreadsheetApp.openById(SS_ID).getSheetByName("明細紀錄");
+    const ss = SpreadsheetApp.openById(SS_ID);
+    const sheet = ss.getSheetByName("明細紀錄");
+
+    // 額外建立一個「偵錯紀錄」分頁，把每筆送進來的資料和錯誤都寫進去
+    let debug = ss.getSheetByName("偵錯紀錄");
+    if (!debug) {
+      debug = ss.insertSheet("偵錯紀錄");
+      debug.appendRow(["時間", "狀態", "收到的資料", "錯誤訊息"]);
+    }
 
     const toNum = (v) => {
       if (v === "" || v == null) return "";
       const n = Number(v);
       return isNaN(n) ? v : n;
     };
-    const data = JSON.parse(e.postData.contents);
+    const raw = e.postData.contents;
+    const data = JSON.parse(raw);
     const row = [
       data["日期"]        || "",
       data["月份"]        || "",
@@ -147,9 +156,20 @@ function doPost(e) {
       data["是否已匯款"]  || "否"
     ];
     sheet.appendRow(row);
+
+    // 寫入成功也記錄到偵錯分頁
+    debug.appendRow([new Date(), "成功", raw, ""]);
+
     return ContentService.createTextOutput(JSON.stringify({ status: "ok" }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
+    // 即使 catch 也寫進偵錯分頁
+    try {
+      const ss2 = SpreadsheetApp.openById("請貼上你的試算表 ID");
+      let d = ss2.getSheetByName("偵錯紀錄");
+      if (!d) { d = ss2.insertSheet("偵錯紀錄"); d.appendRow(["時間","狀態","收到的資料","錯誤訊息"]); }
+      d.appendRow([new Date(), "失敗", (e && e.postData && e.postData.contents) || "(無)", String(err)]);
+    } catch(_) {}
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: String(err) }))
       .setMimeType(ContentService.MimeType.JSON);
   }
