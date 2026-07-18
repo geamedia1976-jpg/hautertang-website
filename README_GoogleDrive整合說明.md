@@ -25,8 +25,10 @@ Google Apps Script Web App（你部署一次）
 
 **方式 A（最推薦，零設定）：直接上傳調整後的 Excel**
 1. 把本倉庫的 `浩德堂_植福田與供養月結系統_含公式版.xlsx` 上傳到 Google Drive。
-2. 在 Drive 中對該檔案按右鍵 →「開啟為」→「Google 試算表」。
-3. 這份已內建「月結總覽 / 每月公布摘要」的 SUMIFS 公式，表單資料進來後會自動結算。
+2. 在 Drive 中對該檔案**按兩下**，或按右鍵 →「開啟為」→ 選 **「Google 試算表」**。
+   > ⚠️ 注意：千萬**不要**選「Google Apps Script」來開啟檔案。Apps Script 是寫程式用的，
+   > 不是開啟試算表的工具，選錯就會出現「無法開啟該檔案」的錯誤頁。
+3. 這份會變成可編輯的 Google 試算表，已內建「月結總覽 / 每月公布摘要」的 SUMIFS 公式，表單資料進來後會自動結算。
 4. 記下網址 `https://docs.google.com/spreadsheets/d/【這段】/edit` 中的**試算表 ID**。
 
 **方式 B：從頭新建**
