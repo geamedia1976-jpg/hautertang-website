@@ -69,6 +69,13 @@ function wrap(handler) {
       res.end(JSON.stringify(obj));
       return res;
     };
+    res.redirect = function (code, url) {
+      if (typeof code === "string") { url = code; code = 302; }
+      res.statusCode = code || 302;
+      res.setHeader("Location", url);
+      res.end();
+      return res;
+    };
     try {
       await handler(req, res);
     } catch (err) {
@@ -123,6 +130,7 @@ function serveStatic(req, res, pathname) {
 /* ---------- 路由 ---------- */
 const createOrder = wrap(require("../api/create-order.js"));
 const ecpayNotify = wrap(require("../api/ecpay-notify.js"));
+const ecpayResult = wrap(require("../api/ecpay-result.js"));
 const health = wrap(require("../api/health.js"));
 
 const server = http.createServer((req, res) => {
@@ -133,6 +141,7 @@ const server = http.createServer((req, res) => {
 
   if (pathname === "/api/create-order") return createOrder(req, res);
   if (pathname === "/api/ecpay-notify") return ecpayNotify(req, res);
+  if (pathname === "/api/ecpay-result") return ecpayResult(req, res);
   if (pathname === "/api/health") return health(req, res);
 
   // 其餘交給靜態檔案

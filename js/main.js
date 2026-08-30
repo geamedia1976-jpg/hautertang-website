@@ -28,6 +28,8 @@
     closeNav();
     // 滾動至頂
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    // 付款結果頁：依綠界回傳參數顯示明確狀態
+    if (route === "payresult") renderPayResult();
   }
 
   window.addEventListener("hashchange", () => showRoute(getRoute()));
@@ -35,6 +37,11 @@
     // 綠界導回時會在 hash 後面帶參數（#payresult?RtnCode=1），這裡只取路由部分
     const h = location.hash.replace("#", "").split("?")[0];
     return routes.includes(h) ? h : "home";
+  }
+
+  function parseHashQuery() {
+    const q = location.hash.split("?")[1] || "";
+    return Object.fromEntries(new URLSearchParams(q).entries());
   }
 
   // 內部連結（data-route）攔截，確保 hash 一致
@@ -665,6 +672,126 @@
       t.classList.remove("show");
       setTimeout(() => (t.hidden = true), 320);
     }, 4200);
+  }
+
+  /* ---------- 付款結果頁 ---------- */
+  function renderPayResult() {
+    const qs = parseHashQuery();
+    const title = document.getElementById("payResultTitle");
+    const body = document.getElementById("payResultBody");
+    const box = document.getElementById("payStatusBox");
+    const method = document.getElementById("payResultMethod");
+    const grid = document.getElementById("payResultGrid");
+    const extra = document.getElementById("payResultExtra");
+    const extraGrid = document.getElementById("payExtraGrid");
+    const extraNote = document.getElementById("payExtraNote");
+    if (!title || !body || !box) return;
+
+    const status = qs.status;
+    const rtnCode = String(qs.RtnCode || "");
+    const paymentType = qs.PaymentType || "";
+    const methodName = formatPaymentType(paymentType);
+
+    // 清除舊狀態樣式
+    box.classList.remove("success", "pending", "error");
+
+    if (status === "invalid") {
+      box.classList.add("error");
+      title.textContent = "交易資料驗證失敗";
+      body.textContent = "回傳的付款資料無法通過安全驗證。請不要重新整理此頁，直接回到護持登記重新填寫即可。若您已完成扣款，請保留綠界通知信並聯絡浩德堂。";
+      method.textContent = "—";
+      if (extra) extra.hidden = true;
+      return;
+    }
+
+    if (status === "method_not_allowed") {
+      box.classList.add("error");
+      title.textContent = "無法直接開啟此頁面";
+      body.textContent = "付款結果頁面需要由綠界在完成付款後自動帶入。請回到護持登記重新操作。";
+      method.textContent = "—";
+      if (extra) extra.hidden = true;
+      return;
+    }
+
+    // 綠界 RtnCode: 1=付款成功, 2=取號成功（ATM/CVS/BARCODE）, 其餘=失敗/取消
+    if (rtnCode === "1") {
+      box.classList.add("success");
+      title.textContent = "付款完成，感謝您的護持";
+      body.textContent = "您的善心已記錄。浩德堂會在確認款項後與您聯絡，願這份功德迴向一切有緣眾生。";
+    } else if (rtnCode === "2") {
+      box.classList.add("pending");
+      title.textContent = "繳費資訊已產生";
+      body.textContent = "請在期限內完成繳費，此筆護持即會生效。逾期未繳，系統將自動取消。";
+    } else if (rtnCode === "0" || !rtnCode) {
+      box.classList.add("error");
+      title.textContent = "付款尚未完成";
+      body.textContent = "您目前尚未完成付款。若改變心意，歡迎再次回到護持登記，我們隨時恭候您的發心。";
+    } else {
+      box.classList.add("error");
+      title.textContent = "交易狀態不明";
+      body.textContent = "綠界回傳的狀態碼為：" + (qs.RtnMsg || rtnCode) + "。請回到護持登記重新操作，或聯絡浩德堂協助確認。";
+    }
+
+    if (method) method.textContent = methodName || "綠界支付";
+
+    // 基本交易資訊
+    const baseItems = [
+      ["綠界交易編號", qs.TradeNo],
+      ["訂單編號", qs.MerchantTradeNo],
+      ["登記金額", qs.TradeAmt ? "NT$ " + Number(qs.TradeAmt).toLocaleString() : ""],
+      ["付款時間", qs.PaymentDate]
+    ].filter(([_, v]) => v);
+    if (grid) grid.innerHTML = baseItems.map(([k, v]) => `<div class="info-item"><span class="info-k">${k}</span><span class="info-v">${v}</span></div>`).join("") +
+      `<div class="info-item"><span class="info-k">付款方式</span><span class="info-v">${methodName || "綠界支付"}</span></div>` +
+      `<div class="info-item"><span class="info-k">後續承接</span><span class="info-v">由浩德堂確認後聯絡</span></div>`;
+
+    // 取號類付款（ATM / 超商代碼 / 超商條碼）顯示繳費資訊
+    if (extra && extraGrid && extraNote) {
+      const isCode = rtnCode === "2";
+      let extraItems = [];
+      let note = "";
+
+      if (qs.vAccount) {
+        // ATM 虛擬帳號
+        extraItems.push(["銀行代碼", qs.BankCode || ""]);
+        extraItems.push(["虛擬帳號", qs.vAccount]);
+        extraItems.push(["繳費期限", qs.ExpireDate || ""]);
+        note = "請使用網路銀行、ATM 轉帳或臨櫃繳費，帳號逾期將失效。";
+      } else if (qs.PaymentNo) {
+        // 超商代碼
+        extraItems.push(["超商繳費代碼", qs.PaymentNo]);
+        extraItems.push(["繳費期限", qs.ExpireDate || ""]);
+        note = "請至 7-11、全家、萊爾富、OK 門市多媒體機台輸入代碼列印繳費單。";
+      } else if (qs.Barcode1 || qs.Barcode2 || qs.Barcode3) {
+        // 超商條碼
+        extraItems.push(["超商條碼一", qs.Barcode1 || ""]);
+        extraItems.push(["超商條碼二", qs.Barcode2 || ""]);
+        extraItems.push(["超商條碼三", qs.Barcode3 || ""]);
+        extraItems.push(["繳費期限", qs.ExpireDate || ""]);
+        note = "請列印或截圖條碼，至超商櫃檯掃描繳費。";
+      }
+
+      if (isCode && extraItems.length) {
+        extra.hidden = false;
+        extraGrid.innerHTML = extraItems.filter(([_, v]) => v).map(([k, v]) => `<div class="info-item"><span class="info-k">${k}</span><span class="info-v">${v}</span></div>`).join("");
+        extraNote.textContent = note;
+      } else {
+        extra.hidden = true;
+      }
+    }
+  }
+
+  function formatPaymentType(raw) {
+    if (!raw) return "";
+    if (raw.startsWith("Credit")) return "信用卡";
+    if (raw.startsWith("WebATM")) return "WebATM";
+    if (raw.startsWith("ATM")) return "ATM 虛擬帳號";
+    if (raw.startsWith("CVS")) return "超商代碼";
+    if (raw.startsWith("BARCODE")) return "超商條碼";
+    if (raw.startsWith("ApplePay")) return "Apple Pay";
+    if (raw.startsWith("GooglePay")) return "Google Pay";
+    if (raw === "ALL") return "綠界支付";
+    return raw;
   }
 
   /* ---------- 初始化 ---------- */

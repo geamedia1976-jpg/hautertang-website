@@ -109,7 +109,7 @@ module.exports = async function handler(req, res) {
     itemName: calc.itemName.slice(0, 200),
     tradeDesc: ("浩德堂 " + calc.groups).slice(0, 200),
     returnURL: `${base}/api/ecpay-notify`,
-    orderResultURL: `${base}/#payresult`,
+    orderResultURL: `${base}/api/ecpay-result`,
     clientBackURL: `${base}/#donate`,
     choosePayment
   });

@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -486,20 +486,26 @@
       </div>
 
       <div class="section">
-        <div class="status-box">
+        <div class="status-box" id="payStatusBox">
           <h3 id="payResultTitle">感謝您的護持</h3>
           <p id="payResultBody">本次登記已送出。若您已完成付款，浩德堂會在確認款項後與您聯絡；若尚未付款，也可回到登記頁重新填寫。</p>
         </div>
 
-        <div class="info-grid" style="margin-top:2rem;">
-          <div class="info-item"><span class="info-k">付款方式</span><span class="info-v">綠界支付</span></div>
+        <div class="info-grid" id="payResultGrid" style="margin-top:2rem;">
+          <div class="info-item"><span class="info-k">付款方式</span><span class="info-v" id="payResultMethod">綠界支付</span></div>
           <div class="info-item"><span class="info-k">後續承接</span><span class="info-v">由浩德堂確認後聯絡</span></div>
+        </div>
+
+        <div class="pay-extra" id="payResultExtra" hidden>
+          <h3 class="sub-block-title">繳費資訊</h3>
+          <div class="info-grid" id="payExtraGrid"></div>
+          <p class="block-note" id="payExtraNote"></p>
         </div>
 
         <p class="closing">阿彌陀佛。願以此功德，迴向一切有緣眾生。</p>
       </div>
 
-      <div class="page-cta">
+      <div class="page-cta" id="payResultCta">
         <a href="#donate" class="btn btn-primary" data-route="donate">回到護持登記</a>
         <a href="#home" class="btn btn-ghost" data-route="home">回到浩德堂首頁</a>
       </div>
@@ -614,10 +620,10 @@
   <!-- 送出成功提示 -->
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="lib/items.js?v=1"></script>
-  <script src="js/qrcode.min.js?v=1"></script>
-  <script src="js/config.js?v=7"></script>
-  <script src="js/news.js?v=7"></script>
-  <script src="js/main.js?v=7"></script>
+  <script src="lib/items.js?v=2"></script>
+  <script src="js/qrcode.min.js?v=2"></script>
+  <script src="js/config.js?v=8"></script>
+  <script src="js/news.js?v=8"></script>
+  <script src="js/main.js?v=8"></script>
 </body>
 </html>
