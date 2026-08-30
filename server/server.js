@@ -123,6 +123,7 @@ function serveStatic(req, res, pathname) {
 /* ---------- 路由 ---------- */
 const createOrder = wrap(require("../api/create-order.js"));
 const ecpayNotify = wrap(require("../api/ecpay-notify.js"));
+const health = wrap(require("../api/health.js"));
 
 const server = http.createServer((req, res) => {
   const parsed = url.parse(req.url);
@@ -132,6 +133,7 @@ const server = http.createServer((req, res) => {
 
   if (pathname === "/api/create-order") return createOrder(req, res);
   if (pathname === "/api/ecpay-notify") return ecpayNotify(req, res);
+  if (pathname === "/api/health") return health(req, res);
 
   // 其餘交給靜態檔案
   serveStatic(req, res, pathname);
