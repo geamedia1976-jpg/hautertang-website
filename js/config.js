@@ -29,71 +29,20 @@ const SITE_CONFIG = {
   },
 
   /* ---------- 綠界 ECPay 收款 ----------
-     ⚠️ 綠界的 HashKey / HashIV 絕對不能放在前端（會被看光），
-        一定要由後端（伺服器或 Google Apps Script）產生訂單與檢查碼。
-     目前先用「綠界收款連結」：到 綠界後台 → 收款連結 產生一組網址，
-     貼到下方 paymentUrl，訪客登記後即可直接點選前往付款。
-     若要改成自動帶金額的整合式金流，請提供以下資料再進行串接：
-       - 特店編號 MerchantID
-       - HashKey / HashIV
-       - 測試或正式環境
-       - 欲啟用的付款方式（信用卡／ATM／超商代碼／LINE Pay…）
-       - 付款完成後要導回的頁面網址 */
+     ⚠️ 綠界的 HashKey / HashIV 只存放在後端環境變數，前端拿不到。
+     訪客送出登記後，前端會呼叫 /api/create-order 建立訂單，
+     後端算出金額並簽章，再把訪客導向綠界付款頁。 */
   ECPAY: {
     enabled: true,
-    paymentUrl: "",     // 例如：https://payment.ecpay.com.tw/...（綠界後台產生的收款連結）
+    apiUrl: "/api/create-order",
     label: "綠界支付",
-    note: "送出登記後，可點選按鈕前往綠界支付完成護持；付款完成請保留綠界提供的交易序號，以利後續核對。"
+    note: "送出登記後會導向綠界支付頁面，可選擇信用卡、ATM、超商代碼等方式完成護持。"
   },
 
   /* ---------- 可複選供養項目 ----------
-     訪客可同時勾選多項（例如：供養銅瓦 4 片 + 供花），系統會自動加總。
-     type 說明：
-       fixed = 固定金額（amount）
-       free  = 隨喜（訪客自行輸入金額）
-       unit  = 以單位計價（unitAmount 為每單位金額；unitPerSet 為每「片」的單位數） */
-  ITEMS: [
-    {
-      id: "taisu-tile",
-      group: "太素觀供養銅瓦",
-      name: "供養銅瓦",
-      type: "unit",
-      unitAmount: 500,
-      unitPerSet: 4,
-      desc: "每單位 500 元，1 片 = 4 單位 = 2,000 元"
-    },
-    {
-      id: "incense",
-      group: "浩德堂植福田",
-      name: "禮敬上香",
-      type: "free",
-      desc: "隨喜發心，金額由您自行填寫"
-    },
-    {
-      id: "flower",
-      group: "浩德堂植福田",
-      name: "供花",
-      type: "fixed",
-      amount: 500,
-      desc: "每份 500 元"
-    },
-    {
-      id: "fruit",
-      group: "浩德堂植福田",
-      name: "供果",
-      type: "fixed",
-      amount: 500,
-      desc: "每份 500 元"
-    },
-    {
-      id: "lamp",
-      group: "浩德堂植福田",
-      name: "供燈",
-      type: "fixed",
-      amount: 500,
-      desc: "每份 500 元"
-    }
-  ],
+     項目定義統一放在 lib/items.js（前後端共用同一份），
+     要增減項目或調整金額，請改 lib/items.js。 */
+  ITEMS: (typeof DONATE_ITEMS !== "undefined" && DONATE_ITEMS.ITEMS) ? DONATE_ITEMS.ITEMS : [],
 
   /* ---------- 分享設定 ---------- */
   SHARE: {

@@ -13,3 +13,11 @@ m-*.png
 assets/images/*-original.jpg
 assets/images/taisu-roof.jpg
 preview/
+
+# ⚠️ 金鑰與環境變數：絕對不能進版控
+.env
+.env.*
+!.env.example
+
+# Node.js
+node_modules/

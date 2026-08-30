@@ -378,9 +378,10 @@
             <p class="form-hint" id="formHint"></p>
 
             <div class="pay-cta" id="payCta" hidden>
-              <p class="pay-cta-msg">感謝您的發心，請點選下方按鈕前往綠界支付完成護持。</p>
-              <a href="#" id="payBtn" class="btn btn-primary full" target="_blank" rel="noopener">前往綠界支付</a>
-              <p class="pay-cta-note">付款完成後請保留綠界提供的交易序號，以利後續核對。</p>
+              <p class="pay-cta-msg" id="payCtaMsg">正在前往綠界支付，請稍候…</p>
+              <div class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <p class="pay-cta-note">若瀏覽器沒有自動跳轉，請點選下方按鈕。</p>
+              <button type="button" class="btn btn-primary full" id="payManualBtn">手動前往綠界支付</button>
             </div>
           </form>
 
@@ -452,7 +453,53 @@
         </div>
       </div>
 
+      <div class="section section-soft">
+        <h2 class="block-title">掃描進入浩德堂網站</h2>
+        <p class="block-note">用手機相機掃描下方 QR Code，即可直接進入浩德堂網站首頁；也可下載圖檔分享給親友，或印在文宣、名片上。</p>
+
+        <div class="site-qr-block">
+          <div class="site-qr-figure" id="qrZoomContact" role="button" tabindex="0" aria-label="放大網站 QR Code">
+            <img id="qrImgContact" src="assets/images/site-qr.png" alt="浩德堂網站 QR Code">
+            <span id="qrBoxContact" hidden></span>
+          </div>
+          <p class="site-qr-url" id="contactQrUrl"></p>
+          <div class="site-qr-actions">
+            <a href="assets/images/qr-poster.png" download="浩德堂網站QRCode.png" class="btn btn-primary">下載 QR Code 圖檔</a>
+            <button type="button" class="btn btn-ghost" id="copySiteUrl">複製網站網址</button>
+          </div>
+          <p class="site-qr-hint">圖檔為 1000 × 1400 像素，適合列印或張貼。</p>
+        </div>
+      </div>
+
       <div class="page-cta">
+        <a href="#home" class="btn btn-ghost" data-route="home">回到浩德堂首頁</a>
+      </div>
+    </section>
+
+    <!-- ========== 付款結果 ========== -->
+    <section class="page" id="page-payresult" hidden>
+      <div class="page-hero">
+        <p class="eyebrow">感謝您的發心</p>
+        <h1>護持登記</h1>
+        <p class="lead">願這份善念，成為一份安定而長遠的力量。</p>
+      </div>
+
+      <div class="section">
+        <div class="status-box">
+          <h3 id="payResultTitle">感謝您的護持</h3>
+          <p id="payResultBody">本次登記已送出。若您已完成付款，浩德堂會在確認款項後與您聯絡；若尚未付款，也可回到登記頁重新填寫。</p>
+        </div>
+
+        <div class="info-grid" style="margin-top:2rem;">
+          <div class="info-item"><span class="info-k">付款方式</span><span class="info-v">綠界支付</span></div>
+          <div class="info-item"><span class="info-k">後續承接</span><span class="info-v">由浩德堂確認後聯絡</span></div>
+        </div>
+
+        <p class="closing">阿彌陀佛。願以此功德，迴向一切有緣眾生。</p>
+      </div>
+
+      <div class="page-cta">
+        <a href="#donate" class="btn btn-primary" data-route="donate">回到護持登記</a>
         <a href="#home" class="btn btn-ghost" data-route="home">回到浩德堂首頁</a>
       </div>
     </section>
@@ -566,6 +613,7 @@
   <!-- 送出成功提示 -->
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
+  <script src="lib/items.js?v=1"></script>
   <script src="js/qrcode.min.js?v=1"></script>
   <script src="js/config.js?v=7"></script>
   <script src="js/news.js?v=7"></script>

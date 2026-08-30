@@ -11,7 +11,7 @@
   "use strict";
 
   /* ---------- 路由 ---------- */
-  const routes = ["home", "about", "taisu", "online", "donate", "news", "contact"];
+  const routes = ["home", "about", "taisu", "online", "donate", "news", "contact", "payresult"];
   const pages = {};
   routes.forEach((r) => (pages[r] = document.getElementById("page-" + r)));
 
@@ -32,7 +32,8 @@
 
   window.addEventListener("hashchange", () => showRoute(getRoute()));
   function getRoute() {
-    const h = location.hash.replace("#", "");
+    // 綠界導回時會在 hash 後面帶參數（#payresult?RtnCode=1），這裡只取路由部分
+    const h = location.hash.replace("#", "").split("?")[0];
     return routes.includes(h) ? h : "home";
   }
 
@@ -104,14 +105,9 @@
     const note = document.getElementById("payNote");
     if (note) {
       note.textContent = ecpay.enabled
-        ? `${ecpay.label || "綠界支付"}（送出登記後可前往完成付款）`
+        ? `${ecpay.label || "綠界支付"}（送出登記後會導向綠界付款頁，可選擇信用卡、ATM 或超商代碼）`
         : "送出登記後由浩德堂與您聯絡確認付款方式。";
     }
-  }
-
-  function getPaymentUrl() {
-    const ecpay = SITE_CONFIG.ECPAY || {};
-    return (ecpay.paymentUrl || "").trim();
   }
 
   /* ---------- 最新消息渲染 ---------- */
@@ -331,81 +327,84 @@
         return;
       }
 
-      const total = totalOf(picked);
-      const now = new Date();
-      const ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-      const ymd = ym + "-" + String(now.getDate()).padStart(2, "0");
+      // 交給後端建立綠界訂單（金額由後端重新計算，前端傳的金額不算數）
+      const raw = picked.map((p) => ({
+        id: p.item.id,
+        units: p.units,
+        freeAmount: p.item.type === "free" ? p.amount : undefined
+      }));
 
-      // 組裝資料（對應月結系統「明細紀錄」欄位）
-      const projectNames = picked.map((p) => p.item.name).join("、");
-      const groupNames = [...new Set(picked.map((p) => p.item.group || ""))].filter(Boolean).join("、");
-      // 多選明細以文字寫入「備註」欄，既有 Google 試算表與 GAS 不需改動
-      const detailText = picked
-        .map((p) => `${p.item.name}｜${p.qtyText}｜${p.amount > 0 ? p.amount.toLocaleString() + " 元" : "隨喜"}`)
-        .join("；");
-      const payText = (SITE_CONFIG.ECPAY && SITE_CONFIG.ECPAY.enabled)
-        ? (SITE_CONFIG.ECPAY.label || "綠界支付")
-        : "另行確認";
-      const noteText = [
-        noteInput.value.trim(),
-        detailText ? `【明細】${detailText}` : "",
-        `【付款】${payText}`
-      ].filter(Boolean).join("　");
-
-      const payload = {
-        日期: ymd,
-        月份: ym,
-        "姓名／稱呼": name,
-        聯絡方式: contact,
-        方向: groupNames,
-        項目: projectNames,
-        單位數: "",
-        單位金額: "",
-        "本筆金額": total,
-        備註: noteText,
-        是否已匯款: "否"
-      };
-
-      // 嘗試上傳 Google Drive；失敗則本機暫存
-      const gasUrl = (SITE_CONFIG.GAS_URL || "").trim();
-      if (!gasUrl) {
-        saveLocal(payload);
-        afterSubmit("本次登記已記錄，浩德堂將盡快與您聯絡確認。", "ok");
-        return;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : "";
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "處理中…"; }
+      if (payCta) {
+        const msg = document.getElementById("payCtaMsg");
+        if (msg) msg.textContent = "正在前往綠界支付，請稍候…";
+        payCta.hidden = false;
       }
 
       try {
-        await postToGAS(gasUrl, payload);
-        afterSubmit("登記已送出，感謝您的發心。浩德堂將盡快與您聯絡確認。", "ok");
+        const res = await fetch(SITE_CONFIG.ECPAY.apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ picked: raw, name, contact, note: noteInput.value.trim() })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.ok) {
+          throw new Error(data.message || "建立訂單時發生問題，請稍後再試。");
+        }
+
+        // 建立隱藏表單，自動導向綠界付款頁
+        goToEcpay(data.action, data.params);
+        showToast("訂單已建立，正在前往綠界支付。", "ok");
+
       } catch (err) {
-        saveLocal(payload);
-        afterSubmit("送出時發生問題，本次登記已先記錄，請再與浩德堂聯絡確認。", "err");
+        if (payCta) payCta.hidden = true;
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+        hint.className = "form-hint error";
+        hint.textContent = (err && err.message) || "送出時發生問題，請稍後再試，或與浩德堂聯絡。";
+        // 本機暫存，避免資料遺失
+        saveLocal({
+          picked: raw,
+          name,
+          contact,
+          note: noteInput.value.trim(),
+          total: totalOf(picked),
+          時間: new Date().toISOString()
+        });
       }
     });
   }
 
-  function afterSubmit(msg, type) {
-    showToast(msg, type);
-    // 顯示綠界付款 CTA
-    const url = getPaymentUrl();
-    if (payCta && SITE_CONFIG.ECPAY && SITE_CONFIG.ECPAY.enabled && url) {
-      payBtn.href = url;
-      payCta.hidden = false;
-      payCta.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else {
-      form.reset();
-      refreshForm();
-    }
-  }
+  /* 建立隱藏表單並自動送出到綠界 */
+  let ecpayForm = null;
+  function goToEcpay(action, params) {
+    if (!action || !params) return;
 
-  async function postToGAS(url, payload) {
-    const res = await fetch(url, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+    if (ecpayForm && ecpayForm.parentNode) ecpayForm.parentNode.removeChild(ecpayForm);
+
+    ecpayForm = document.createElement("form");
+    ecpayForm.method = "POST";
+    ecpayForm.action = action;
+    ecpayForm.style.display = "none";
+    ecpayForm.target = "_self";
+
+    Object.keys(params).forEach((k) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = k;
+      input.value = params[k];
+      ecpayForm.appendChild(input);
     });
-    return res;
+
+    document.body.appendChild(ecpayForm);
+
+    const manual = document.getElementById("payManualBtn");
+    if (manual) manual.onclick = () => ecpayForm.submit();
+
+    ecpayForm.submit();
   }
 
   function saveLocal(payload) {
@@ -469,46 +468,36 @@
   }
 
   /* 依設定網址即時產生 QR Code；若產生失敗則沿用圖片檔 */
+  function makeQr(boxId, imgId, url, size) {
+    const box = document.getElementById(boxId);
+    const img = document.getElementById(imgId);
+    if (!box) return;
+    box.innerHTML = "";
+    try {
+      new QRCode(box, {
+        text: url, width: size, height: size,
+        colorDark: "#322F2A", colorLight: "#FFFFFF",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      box.hidden = false;
+      if (img) img.hidden = true;
+    } catch (_) {
+      box.hidden = true;
+      if (img) img.hidden = false;
+    }
+  }
+
   function renderQr() {
     if (SHARE.qrCode === false) return;
     if (typeof QRCode === "undefined") return;
     const url = siteRoot() + "/";   // QR Code 固定導向首頁，方便掃描進站
 
-    const small = document.getElementById("qrBox");
-    const smallImg = document.getElementById("qrImg");
-    if (small) {
-      small.innerHTML = "";
-      try {
-        new QRCode(small, {
-          text: url, width: 184, height: 184,
-          colorDark: "#322F2A", colorLight: "#FFFFFF",
-          correctLevel: QRCode.CorrectLevel.M
-        });
-        small.hidden = false;
-        if (smallImg) smallImg.hidden = true;
-      } catch (_) {
-        small.hidden = true;
-        if (smallImg) smallImg.hidden = false;
-      }
-    }
+    makeQr("qrBox", "qrImg", url, 184);            // 全站底部分享區
+    makeQr("qrBoxLarge", "qrImgLarge", url, 300);  // 放大檢視
+    makeQr("qrBoxContact", "qrImgContact", url, 440); // 聯絡頁主據點
 
-    const large = document.getElementById("qrBoxLarge");
-    const largeImg = document.getElementById("qrImgLarge");
-    if (large) {
-      large.innerHTML = "";
-      try {
-        new QRCode(large, {
-          text: url, width: 300, height: 300,
-          colorDark: "#322F2A", colorLight: "#FFFFFF",
-          correctLevel: QRCode.CorrectLevel.M
-        });
-        large.hidden = false;
-        if (largeImg) largeImg.hidden = true;
-      } catch (_) {
-        large.hidden = true;
-        if (largeImg) largeImg.hidden = false;
-      }
-    }
+    const u = document.getElementById("contactQrUrl");
+    if (u) u.textContent = url;
   }
 
   function bindShare() {
@@ -565,27 +554,49 @@
       }
     });
 
-    // QR Code 放大
+    // QR Code 放大（底部分享區 + 聯絡頁主據點）
     const modal = document.getElementById("qrModal");
-    const zoom = document.getElementById("qrZoom");
     const close = document.getElementById("qrClose");
     const modalUrl = document.getElementById("qrModalUrl");
-    if (zoom && modal) {
-      zoom.addEventListener("click", () => {
-        if (modalUrl) modalUrl.textContent = pageUrl();
-        modal.hidden = false;
-        requestAnimationFrame(() => modal.classList.add("show"));
-      });
+
+    function openModal() {
+      if (!modal) return;
+      if (modalUrl) modalUrl.textContent = siteRoot() + "/";
+      modal.hidden = false;
+      requestAnimationFrame(() => modal.classList.add("show"));
     }
     function closeModal() {
+      if (!modal) return;
       modal.classList.remove("show");
       setTimeout(() => (modal.hidden = true), 260);
     }
+
+    ["qrZoom", "qrZoomContact"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("click", openModal);
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(); }
+        });
+      }
+    });
+
     if (close) close.addEventListener("click", closeModal);
     if (modal) modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && modal && !modal.hidden) closeModal();
     });
+
+    // 聯絡頁：複製網站網址
+    const copyBtn = document.getElementById("copySiteUrl");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        const url = siteRoot() + "/";
+        let ok = await copyText(url);
+        if (!ok) { window.prompt("請複製以下網址：", url); ok = true; }
+        showToast("已複製網站網址，可直接貼上分享。", "ok");
+      });
+    }
   }
 
   /* ---------- Toast ---------- */

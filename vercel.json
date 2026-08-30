@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/create-order.js": { "maxDuration": 15 },
+    "api/ecpay-notify.js": { "maxDuration": 15 }
+  }
+}
