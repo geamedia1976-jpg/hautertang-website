@@ -12,3 +12,4 @@ m-*.png
 # 原圖備份與中間產物（不部署，網站只使用優化後的 hero/about/taisu/line-qr.jpg）
 assets/images/*-original.jpg
 assets/images/taisu-roof.jpg
+preview/
