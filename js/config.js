@@ -14,15 +14,18 @@ const SITE_CONFIG = {
   CONTACT: {
     phone: "",          // 例如：0912-345-678
     line: "",           // 例如：@haodetang
+    lineUrl: "https://line.me/ti/g2/dNEAqN1iJPr5z3tfA7ZyvOL-gULQYNEGC6QaDw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", // LINE 社群邀請連結
+    lineQrCode: "assets/images/line-qr.jpg", // LINE QR Code 圖片路徑
     email: "",          // 例如：hello@haodetang.org
-    note: "（待使用者填寫：電話／LINE／Email／表單連結）"
+    note: "歡迎與浩德堂聯絡，我們會盡快回應你的來信與疑問。"
   },
 
   /* ---------- 匯款資訊（顯示於「隨喜護持」表單） ---------- */
   REMIT: {
-    bank: "",           // 銀行名稱
-    account: "",        // 帳號
-    name: "",           // 戶名
+    bank: "板信商業銀行 桃鶯分行",           // 銀行名稱
+    code: "118",                              // 分行代碼
+    account: "03495-004-586889",              // 帳號
+    name: "",                                 // 戶名
     note: "匯款資訊由浩德堂後續承接提供"
   },
 

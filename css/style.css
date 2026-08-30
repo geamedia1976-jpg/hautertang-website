@@ -89,19 +89,19 @@ img{max-width:100%;display:block;}
 .btn.full{width:100%;}
 
 /* ---------- 首頁 Hero（PDF：米白底居中，金棕元素） ---------- */
-.hero{position:relative;overflow:hidden;padding:5rem 1.1rem 4rem;text-align:center;}
+.hero{position:relative;overflow:hidden;padding:5rem 1.1rem 4rem;text-align:center;min-height:520px;display:flex;align-items:center;justify-content:center;}
 .hero-bg{
   position:absolute;inset:0;
   background:
-    radial-gradient(120% 80% at 50% -10%, #fffaf0 0%, transparent 60%),
-    linear-gradient(180deg,#fbf6ec 0%, #f3ede1 100%);
+    linear-gradient(135deg, rgba(247,245,240,.88) 0%, rgba(251,246,236,.70) 50%, rgba(247,245,240,.85) 100%),
+    url('../assets/images/hero.jpg') center 40% / cover no-repeat;
 }
 .hero-bg::after{
   content:"";position:absolute;left:50%;bottom:-60px;transform:translateX(-50%);
   width:360px;height:360px;border-radius:50%;
   background:radial-gradient(circle, rgba(154,123,79,.16), transparent 70%);
 }
-.hero-inner{position:relative;max-width:760px;margin:0 auto;}
+.hero-inner{position:relative;max-width:760px;margin:0 auto;z-index:1;}
 .hero-eyebrow{color:var(--gold);letter-spacing:.2em;font-size:.85rem;margin:0 0 1rem;}
 .hero-title{font-size:clamp(2rem,6vw,3.1rem);margin:0 0 1.2rem;letter-spacing:.06em;color:var(--ink);}
 .hero-sub{color:var(--ink-soft);font-size:1.05rem;margin:0 auto 2rem;max-width:620px;}
@@ -134,12 +134,15 @@ img{max-width:100%;display:block;}
 .split-text h2{margin-top:0;color:var(--ink);}
 .split-text p{color:var(--ink-soft);}
 .split-media{
-  border:1px dashed var(--gold-line);border-radius:var(--radius);
+  border:1px solid var(--gold-line);border-radius:var(--radius);
   background:var(--card-warm);min-height:240px;display:flex;align-items:center;justify-content:center;
-  color:var(--gold-light);position:relative;
+  color:var(--gold-light);position:relative;overflow:hidden;
 }
 .split-media.tall{min-height:340px;}
 .split-media svg{width:45%;opacity:.7;}
+.split-media-img{
+  width:100%;height:100%;object-fit:cover;border-radius:var(--radius);
+}
 .placeholder-img::before{
   content:attr(data-label);position:absolute;bottom:14px;left:0;right:0;text-align:center;
   font-size:.82rem;color:var(--ink-soft);letter-spacing:.05em;
@@ -157,7 +160,17 @@ img{max-width:100%;display:block;}
   color:#F8F4EC;
   padding:3.2rem 1.1rem 2.6rem;text-align:center;
   border-bottom:3px solid #5C4327;
+  position:relative;overflow:hidden;
 }
+.page-hero::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(62,46,30,.78), rgba(90,70,45,.72));
+  z-index:0;
+}
+.page-hero.taisu-hero::before{
+  background:linear-gradient(135deg, rgba(62,46,30,.70), rgba(70,54,34,.78)), url('../assets/images/taisu.jpg') center / cover no-repeat;
+}
+.page-hero > *{position:relative;z-index:1;}
 .page-hero .eyebrow{color:#E9DCC2;letter-spacing:.18em;font-size:.82rem;margin:0 0 .8rem;}
 .page-hero h1{font-size:clamp(1.8rem,5vw,2.6rem);margin:0 0 .9rem;color:#F8F4EC;}
 .page-hero .lead{max-width:720px;margin:0 auto;color:#EDE3D2;}
@@ -182,10 +195,15 @@ img{max-width:100%;display:block;}
   max-width:760px;margin:0 auto;background:var(--card-warm);border:1px solid var(--gold-line);
   border-radius:var(--radius);padding:1.6rem 1.8rem;box-shadow:var(--shadow-sm);
 }
-.status-box h3,.note-box h4,.contact-box h4{margin:0 0 .6rem;color:var(--gold);}
+.status-box h3,.note-box h4,.contact-box h4{margin:0 0 .6rem;color:var(--gold);text-align:center;}
+.status-box,.note-box,.contact-box{text-align:center;}
 .status-box p,.note-box p{margin:0;color:var(--ink-soft);}
 .stage-list{margin:.8rem 0 0;padding-left:1.2rem;color:var(--ink-soft);}
 .stage-list li{margin:.3rem 0;}
+
+.contact-info{display:flex;flex-direction:column;align-items:center;gap:1.1rem;text-align:center;}
+.contact-qr{width:220px;height:220px;object-fit:contain;border:1px solid var(--gold-line);border-radius:var(--radius);background:#fff;padding:.5rem;box-shadow:var(--shadow-sm);}
+.contact-line-msg{margin:0;color:var(--ink);font-size:1.05rem;}
 
 /* ---------- 進度卡 ---------- */
 .progress-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}

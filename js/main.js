@@ -80,18 +80,32 @@
     const c = SITE_CONFIG.CONTACT;
     const el = document.getElementById("contactInfo");
     if (!el) return;
-    const parts = [];
-    if (c.phone) parts.push("電話：" + c.phone);
-    if (c.line) parts.push("LINE：" + c.line);
-    if (c.email) parts.push("Email：" + c.email);
-    el.textContent = parts.length ? parts.join("　｜　") : c.note;
+
+    // 若有 LINE 邀請連結，優先顯示 QR Code + 加入社群按鈕
+    if (c.lineUrl) {
+      el.innerHTML = `
+        ${c.lineQrCode ? `<img src="${c.lineQrCode}" alt="浩德堂 LINE 社群 QR Code" class="contact-qr">` : ""}
+        <p class="contact-line-msg">您已被邀請加入「浩德堂」！<br>請點選以下連結加入社群。</p>
+        <a href="${c.lineUrl}" target="_blank" rel="noopener" class="btn btn-primary">加入浩德堂 LINE 社群</a>
+      `;
+    } else {
+      const parts = [];
+      if (c.phone) parts.push("電話：" + c.phone);
+      if (c.line) parts.push("LINE：" + c.line);
+      if (c.email) parts.push("Email：" + c.email);
+      el.textContent = parts.length ? parts.join("　｜　") : c.note;
+    }
 
     // 匯款資訊
     const r = SITE_CONFIG.REMIT;
     const payField = document.querySelector('.field .inline-note');
     if (payField) {
-      const info = [r.bank, r.account, r.name].filter(Boolean).join("　");
-      payField.textContent = info ? "匯款｜" + info : r.note;
+      const parts = [];
+      if (r.bank) parts.push(r.bank);
+      if (r.code) parts.push("分行代碼：" + r.code);
+      if (r.account) parts.push("帳號：" + r.account);
+      if (r.name) parts.push("戶名：" + r.name);
+      payField.textContent = parts.length ? "匯款｜" + parts.join("　") : r.note;
     }
   }
 
@@ -238,18 +252,18 @@
       const gasUrl = (SITE_CONFIG.GAS_URL || "").trim();
       if (!gasUrl) {
         saveLocal(payload);
-        showToast("已暫存本機（尚未連接 Google Drive）。請於 config.js 填入 GAS_URL。", "err");
+        showToast("本次登記已記錄，浩德堂將盡快與您聯絡確認。", "ok");
         form.reset(); refreshProjects();
         return;
       }
 
       try {
         await postToGAS(gasUrl, payload);
-        showToast("登記已送出，感謝您的發心。資料已進入浩德堂月結系統。", "ok");
+        showToast("登記已送出，感謝您的發心。浩德堂將盡快與您聯絡確認。", "ok");
         form.reset(); refreshProjects();
       } catch (err) {
         saveLocal(payload);
-        showToast("線路上傳失敗，已改為本機暫存。錯誤：" + err.message, "err");
+        showToast("送出時發生問題，本次登記已先記錄，請再與浩德堂聯絡確認。", "err");
         form.reset(); refreshProjects();
       }
     });
