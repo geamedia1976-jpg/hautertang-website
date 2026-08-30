@@ -318,6 +318,25 @@ img{max-width:100%;display:block;}
 .summary-total li:last-child{border-bottom:none;}
 .summary-total #sumAmount{color:var(--gold);font-size:1.15rem;}
 
+/* ---------- 付款方式選擇 ---------- */
+.payment-list{display:grid;gap:.6rem;}
+.pay-card{
+  display:flex;gap:.8rem;align-items:flex-start;cursor:pointer;
+  background:var(--card-warm);border:1px solid var(--gold-line);border-radius:12px;
+  padding:.85rem 1rem;transition:.2s;
+}
+.pay-card:hover{border-color:var(--gold-light);background:#fff;}
+.pay-card.checked{border-color:var(--gold);background:#fff;box-shadow:0 0 0 2px rgba(154,123,79,.16);}
+.pay-card input[type="radio"]{flex:0 0 auto;width:19px;height:19px;margin-top:.2rem;accent-color:var(--gold);cursor:pointer;}
+.pay-body{display:flex;flex-direction:column;gap:.15rem;}
+.pay-name{font-family:var(--serif);font-size:1.02rem;color:var(--ink);font-weight:600;}
+.pay-desc{font-size:.84rem;color:var(--ink-soft);}
+.pay-secure{
+  display:flex;align-items:center;gap:.4rem;margin:.2rem 0 0;
+  font-size:.8rem;color:var(--ink-soft);
+}
+.pay-secure svg{width:14px;height:14px;flex:0 0 auto;}
+
 /* ---------- 前往綠界的過場動畫 ---------- */
 .loading-dots{display:flex;gap:.4rem;justify-content:center;margin:1rem 0;}
 .loading-dots span{

@@ -370,11 +370,12 @@
             </div>
 
             <div class="field">
-              <span class="field-label">付款方式</span>
-              <p class="inline-note" id="payNote">綠界支付（送出登記後可前往完成付款）</p>
+              <span class="field-label">付款方式 *</span>
+              <div id="paymentList" class="payment-list"><!-- 由 js/main.js 依 SITE_CONFIG.PAYMENT_METHODS 渲染 --></div>
+              <p class="inline-note" id="payNote"></p>
             </div>
 
-            <button type="submit" class="btn btn-primary full">送出本次登記</button>
+            <button type="submit" class="btn btn-primary full" id="submitBtn">送出登記並前往付款</button>
             <p class="form-hint" id="formHint"></p>
 
             <div class="pay-cta" id="payCta" hidden>

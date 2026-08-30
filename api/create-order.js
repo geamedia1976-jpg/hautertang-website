@@ -8,7 +8,7 @@
    ========================================================= */
 
 const ecpay = require("../lib/ecpay.js");
-const { ITEMS, computeSelection } = require("../lib/items.js");
+const { ITEMS, computeSelection, resolveEcpayCode } = require("../lib/items.js");
 const getEnv = require("./_env.js");
 
 module.exports = async function handler(req, res) {
@@ -96,6 +96,9 @@ module.exports = async function handler(req, res) {
     sheetMsg = "未設定 GAS_URL，略過寫入";
   }
 
+  // 訪客在站內選的付款方式 → 轉成綠界代碼，綠界會直接開對應的付款頁
+  const choosePayment = resolveEcpayCode(String(body.payment || "").trim());
+
   const base = env.siteUrl.replace(/\/+$/, "");
   const params = ecpay.buildOrder({
     merchantId: env.merchantId,
@@ -108,7 +111,7 @@ module.exports = async function handler(req, res) {
     returnURL: `${base}/api/ecpay-notify`,
     orderResultURL: `${base}/#payresult`,
     clientBackURL: `${base}/#donate`,
-    choosePayment: "ALL"
+    choosePayment
   });
 
   return res.status(200).json({
@@ -118,6 +121,7 @@ module.exports = async function handler(req, res) {
     tradeNo,
     total: calc.total,
     lines: calc.lines,
+    payment: choosePayment,
     sheet: { written: sheetOk, message: sheetMsg }
   });
 };

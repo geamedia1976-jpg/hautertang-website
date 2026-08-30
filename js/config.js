@@ -44,6 +44,14 @@ const SITE_CONFIG = {
      要增減項目或調整金額，請改 lib/items.js。 */
   ITEMS: (typeof DONATE_ITEMS !== "undefined" && DONATE_ITEMS.ITEMS) ? DONATE_ITEMS.ITEMS : [],
 
+  /* ---------- 付款方式（只列出綠界後台已開通的） ----------
+     要新增 ATM 虛擬帳號、超商代碼等，
+     請先到綠界後台申請開通，再把 lib/items.js 裡該項目的
+     enabled 改成 true，網站就會自動出現，不必改程式。 */
+  PAYMENT_METHODS: (typeof DONATE_ITEMS !== "undefined" && DONATE_ITEMS.AVAILABLE_PAYMENTS)
+    ? DONATE_ITEMS.AVAILABLE_PAYMENTS
+    : [],
+
   /* ---------- 分享設定 ---------- */
   SHARE: {
     facebook: true,

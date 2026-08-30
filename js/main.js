@@ -103,11 +103,13 @@
   function bindPayment() {
     const ecpay = SITE_CONFIG.ECPAY || {};
     const note = document.getElementById("payNote");
-    if (note) {
-      note.textContent = ecpay.enabled
-        ? `${ecpay.label || "綠界支付"}（送出登記後會導向綠界付款頁，可選擇信用卡、ATM 或超商代碼）`
-        : "送出登記後由浩德堂與您聯絡確認付款方式。";
+    if (!note) return;
+    if (!ecpay.enabled) {
+      note.textContent = "送出登記後由浩德堂與您聯絡確認付款方式。";
+      return;
     }
+    // 安全提示已由 .pay-secure 顯示，這裡留白避免重複佔版面
+    note.hidden = true;
   }
 
   /* ---------- 最新消息渲染 ---------- */
@@ -139,6 +141,7 @@
   const noteInput = document.getElementById("note");
   const sumItems = document.getElementById("sumItems");
   const sumAmount = document.getElementById("sumAmount");
+  const paymentList = document.getElementById("paymentList");
   const payCta = document.getElementById("payCta");
   const payBtn = document.getElementById("payBtn");
 
@@ -198,6 +201,46 @@
           ${extra}
         </div>
       </div>`;
+  }
+
+  /* ---------- 付款方式選擇 ---------- */
+  const payMethods = (SITE_CONFIG.PAYMENT_METHODS || []).filter((m) => m && m.id && m.name);
+
+  function renderPayments() {
+    if (!paymentList) return;
+    if (!payMethods.length) {
+      paymentList.innerHTML = '<p class="inline-note">送出登記後由浩德堂與您聯絡確認付款方式。</p>';
+      return;
+    }
+    paymentList.innerHTML = payMethods.map((m, i) => `
+      <label class="pay-card${i === 0 ? " checked" : ""}" data-pay="${m.id}">
+        <input type="radio" name="payment" id="pay-${m.id}" value="${m.id}"${i === 0 ? " checked" : ""}>
+        <span class="pay-body">
+          <span class="pay-name">${m.name}</span>
+          <span class="pay-desc">${m.desc || ""}</span>
+        </span>
+      </label>
+    `).join("") + `
+      <p class="pay-secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+        </svg>
+        付款資料由綠界科技處理，本站不會取得或保存您的卡號。
+      </p>`;
+
+    paymentList.addEventListener("change", (e) => {
+      if (!e.target.matches('input[name="payment"]')) return;
+      paymentList.querySelectorAll(".pay-card").forEach((c) => {
+        const r = c.querySelector('input[type="radio"]');
+        c.classList.toggle("checked", !!(r && r.checked));
+      });
+    });
+  }
+
+  function selectedPayment() {
+    const el = paymentList ? paymentList.querySelector('input[name="payment"]:checked') : null;
+    return el ? el.value : "";
   }
 
   /* 取得目前勾選的項目與金額 */
@@ -334,12 +377,17 @@
         freeAmount: p.item.type === "free" ? p.amount : undefined
       }));
 
-      const submitBtn = form.querySelector('button[type="submit"]');
+      const submitBtn = document.getElementById("submitBtn");
       const originalText = submitBtn ? submitBtn.textContent : "";
+      const payLabel = payMethods.find((m) => m.id === selectedPayment());
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "處理中…"; }
       if (payCta) {
         const msg = document.getElementById("payCtaMsg");
-        if (msg) msg.textContent = "正在前往綠界支付，請稍候…";
+        if (msg) {
+          msg.textContent = payLabel
+            ? `正在前往綠界「${payLabel.name}」付款頁，請稍候…`
+            : "正在前往綠界支付，請稍候…";
+        }
         payCta.hidden = false;
       }
 
@@ -347,7 +395,13 @@
         const res = await fetch(SITE_CONFIG.ECPAY.apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ picked: raw, name, contact, note: noteInput.value.trim() })
+          body: JSON.stringify({
+            picked: raw,
+            name,
+            contact,
+            note: noteInput.value.trim(),
+            payment: selectedPayment()
+          })
         });
 
         const data = await res.json().catch(() => ({}));
@@ -616,6 +670,7 @@
   /* ---------- 初始化 ---------- */
   bindContact();
   bindPayment();
+  renderPayments();
   renderNews();
   bindShare();
   if (form && itemList) refreshForm();
