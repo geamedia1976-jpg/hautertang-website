@@ -1,7 +1,14 @@
 .codebuddy/
 *.log
 .DS_Store
+
+# 開發過程的暫存檔（截圖、封裝檔、patch）
 preview-*.png
+check-style.png
+m-*.png
+*.patch
+*.zip
+
 # 原圖備份與中間產物（不部署，網站只使用優化後的 hero/about/taisu/line-qr.jpg）
 assets/images/*-original.jpg
 assets/images/taisu-roof.jpg

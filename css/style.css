@@ -279,6 +279,105 @@ img{max-width:100%;display:block;}
 .footer-nav a:hover{color:var(--gold-light);}
 .footer-copy{margin:0;font-size:.82rem;color:#9a9082;}
 
+/* ---------- 供養項目（可複選卡片） ---------- */
+.item-list{display:grid;gap:.75rem;}
+.item-group-title{
+  font-size:.85rem;color:var(--gold);letter-spacing:.1em;font-weight:500;
+  margin:.5rem 0 -.15rem;padding-left:.2rem;
+}
+.item-card{
+  display:flex;gap:.85rem;align-items:flex-start;
+  background:var(--card-warm);border:1px solid var(--gold-line);border-radius:12px;
+  padding:.9rem 1rem;cursor:pointer;transition:.2s;
+}
+.item-card:hover{border-color:var(--gold-light);background:#fff;}
+.item-card.checked{border-color:var(--gold);background:#fff;box-shadow:0 0 0 2px rgba(154,123,79,.16);}
+.item-card input[type="checkbox"]{
+  flex:0 0 auto;width:20px;height:20px;margin-top:.18rem;accent-color:var(--gold);cursor:pointer;
+}
+.item-body{flex:1;min-width:0;}
+.item-top{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;}
+.item-name{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:600;}
+.item-price{font-size:.88rem;color:var(--gold);white-space:nowrap;}
+.item-desc{margin:.15rem 0 0;font-size:.86rem;color:var(--ink-soft);}
+.item-extra{
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+  margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--gold-line);
+}
+.item-card:not(.checked) .item-extra{display:none;}
+.item-extra label{font-size:.85rem;color:var(--gold);white-space:nowrap;}
+.item-extra input{
+  width:92px;font-family:var(--sans);font-size:.95rem;padding:.42rem .6rem;
+  border:1px solid var(--gold-line);border-radius:8px;background:#fff;color:var(--ink);
+}
+.item-extra input:focus{outline:none;border-color:var(--gold-light);box-shadow:0 0 0 3px rgba(154,123,79,.15);}
+.item-hintline{margin:.3rem 0 0;font-size:.84rem;color:var(--ink-soft);}
+.item-hintline b{color:var(--gold);font-family:var(--serif);}
+.summary-list .summary-empty{color:var(--ink-soft);justify-content:center;font-size:.9rem;}
+.summary-total{margin-top:.6rem;border-top:1px solid var(--gold-line);padding-top:.4rem;}
+.summary-total li:last-child{border-bottom:none;}
+.summary-total #sumAmount{color:var(--gold);font-size:1.15rem;}
+
+/* ---------- 綠界支付 CTA ---------- */
+.pay-cta{
+  margin-top:1.1rem;padding:1.2rem 1.3rem;text-align:center;
+  background:var(--card-warm);border:1px solid var(--gold-line);border-radius:12px;
+}
+.pay-cta-msg{margin:0 0 .8rem;color:var(--ink);font-size:.98rem;}
+.pay-cta-note{margin:.8rem 0 0;font-size:.83rem;color:var(--ink-soft);}
+
+/* ---------- 分享區（全站共用） ---------- */
+.share-bar{background:var(--bg-soft);border-top:1px solid var(--gold-line);padding:2.2rem 1.1rem;}
+.share-inner{
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;
+}
+.share-head{flex:1 1 260px;min-width:220px;}
+.share-title{font-family:var(--serif);font-size:1.25rem;color:var(--ink);margin:0 0 .3rem;}
+.share-desc{margin:0;color:var(--ink-soft);font-size:.92rem;}
+.share-actions{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;}
+.share-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.35rem;
+  background:none;border:0;cursor:pointer;padding:.2rem;font-family:var(--sans);
+  transition:.2s;min-width:64px;
+}
+.share-btn svg{width:42px;height:42px;border-radius:50%;transition:.2s;}
+.share-btn span{font-size:.8rem;color:var(--ink-soft);transition:.2s;}
+.share-btn:hover svg{transform:translateY(-3px);filter:brightness(1.08);}
+.share-btn:hover span{color:var(--gold);}
+.share-btn.facebook svg circle{fill:#1877F2;}
+.share-btn.line svg circle{fill:#06C755;}
+.share-btn.copy svg circle,.share-btn.more svg circle{fill:var(--gold);}
+
+.share-qr{display:flex;align-items:center;gap:.9rem;flex:0 0 auto;}
+.qr-figure{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#fff;border:1px solid var(--gold-line);border-radius:12px;padding:.45rem;
+  cursor:pointer;box-shadow:var(--shadow-sm);transition:.2s;line-height:0;
+}
+.qr-figure:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.qr-figure > span,.qr-modal-figure > span{display:block;}
+.qr-figure img:not([hidden]),.qr-figure canvas:not([hidden]){width:92px;height:92px;display:block;}
+.qr-figure img[hidden],.qr-figure canvas[hidden]{display:none;}
+.share-qr-text{margin:0;font-size:.85rem;color:var(--ink-soft);line-height:1.6;}
+
+/* QR Code 放大 */
+.qr-modal{
+  position:fixed;inset:0;z-index:120;background:rgba(46,42,38,.72);
+  display:flex;align-items:center;justify-content:center;padding:1.2rem;
+  opacity:0;transition:opacity .25s;
+}
+.qr-modal.show{opacity:1;}
+.qr-modal-inner{
+  background:var(--card);border-radius:var(--radius);padding:1.8rem;text-align:center;
+  box-shadow:var(--shadow);max-width:92vw;
+}
+.qr-modal-figure{background:#fff;border-radius:10px;padding:.6rem;display:inline-block;}
+.qr-modal-figure img:not([hidden]),.qr-modal-figure canvas:not([hidden]){width:min(300px,70vw);height:auto;display:block;margin:0 auto;border-radius:6px;}
+.qr-modal-figure img[hidden],.qr-modal-figure canvas[hidden]{display:none;}
+.qr-modal-text{margin:1rem 0 .3rem;color:var(--ink);font-family:var(--serif);}
+.qr-modal-url{margin:0 0 1.1rem;font-size:.82rem;color:var(--ink-soft);word-break:break-all;}
+
 /* ---------- Toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
@@ -308,6 +407,49 @@ img{max-width:100%;display:block;}
   .site-nav a{padding:.8rem .4rem;border-bottom:1px solid var(--bg-soft);}
   .card-grid.two,.card-grid.four,.info-grid{grid-template-columns:1fr;}
   .section{padding:2rem 1.1rem;}
-  .hero{padding:3.4rem 1.1rem 3rem;}
   .donate-form{padding:1.3rem;}
+
+  /* --- 行動裝置圖片顯示優化：避免主體被裁掉 --- */
+  /* 首頁 hero：降低高度、對準千手觀音主體 */
+  .hero{min-height:440px;padding:3rem 1.1rem 2.6rem;}
+  .hero-bg{background-position:center 32%;}
+
+  /* 太素觀 hero：超寬屋頂圖完整顯示兩個屋簷（底部留白放圖） */
+  .page-hero.taisu-hero{padding:2.4rem 1.1rem 8.5rem;}
+  .page-hero.taisu-hero::before{
+    background-size:100% auto;
+    background-position:center bottom;
+  }
+
+  /* 緣起 / 白衣觀音：手機單欄改為自然比例，不再用固定高度裁切 */
+  .split-media,.split-media.tall{min-height:0;aspect-ratio:4/3;}
+  .split-media-img{height:100%;}
+
+  /* LINE QR Code 手機尺寸 */
+  .contact-qr{width:180px;height:180px;}
+
+  /* 供養項目卡 */
+  .item-card{padding:.8rem .85rem;gap:.7rem;}
+  .item-top{gap:.4rem;}
+  .item-name{font-size:1rem;}
+  .item-extra input{width:78px;}
+
+  /* 分享區：改為直式堆疊 */
+  .share-inner{flex-direction:column;text-align:center;gap:1.4rem;}
+  .share-head{flex:0 0 auto;}
+  .share-actions{gap:1rem;}
+  .share-btn svg{width:38px;height:38px;}
+  .share-qr{flex-direction:column;gap:.5rem;text-align:center;}
+  .qr-figure img,.qr-figure canvas{width:104px;height:104px;}
+  .share-qr-text br{display:none;}
+}
+
+/* ---------- 平板／較小螢幕圖片微調 ---------- */
+@media (min-width:681px) and (max-width:860px){
+  .page-hero.taisu-hero{padding:2.8rem 1.1rem 7rem;}
+  .page-hero.taisu-hero::before{
+    background-size:100% auto;
+    background-position:center bottom;
+  }
+  .hero-bg{background-position:center 36%;}
 }
