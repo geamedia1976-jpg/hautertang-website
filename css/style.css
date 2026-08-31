@@ -427,6 +427,10 @@ img{max-width:100%;display:block;}
   opacity:0;transition:opacity .25s;
 }
 .qr-modal.show{opacity:1;}
+/* 修正：作者樣式的 display:flex 會壓過瀏覽器預設的 [hidden]{display:none}，
+   導致彈窗在 hidden 狀態下仍全螢幕覆蓋（opacity:0 看不見）並吃掉所有點擊。
+   此規則特異性 (0,2,0) 高於 .qr-modal (0,1,0)，可正確隱藏。 */
+.qr-modal[hidden]{display:none;pointer-events:none;}
 .qr-modal-inner{
   background:var(--card);border-radius:var(--radius);padding:1.8rem;text-align:center;
   box-shadow:var(--shadow);max-width:92vw;
