@@ -794,12 +794,74 @@
     return raw;
   }
 
+  /* ---------- QR Code 放大彈窗 ----------
+     彈窗預設帶 hidden；開啟時移除 hidden 並加 .show 觸發淡入，
+     關閉時先移除 .show 淡出，等動畫結束（250ms）再恢復 hidden。
+     CSS 另有 pointer-events 雙重保險，任何情況下未開啟都不會攔截點擊。 */
+  function bindQrModal() {
+    const modal = document.getElementById("qrModal");
+    if (!modal) return;
+
+    const urlEl = document.getElementById("qrModalUrl");
+    const closeBtn = document.getElementById("qrClose");
+    const openers = ["qrZoom", "qrZoomContact"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    let lastFocus = null;
+    let hideTimer = null;
+
+    function openModal() {
+      window.clearTimeout(hideTimer);
+      lastFocus = document.activeElement;
+      if (urlEl) urlEl.textContent = siteRoot() + "/";
+      modal.hidden = false;
+      // 下一幀才加 .show，確保 opacity 轉場有作用
+      window.requestAnimationFrame(() => modal.classList.add("show"));
+      document.body.style.overflow = "hidden";
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeModal() {
+      if (modal.hidden) return;
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+      // 等淡出動畫結束再隱藏（與 CSS transition .25s 對應）
+      hideTimer = window.setTimeout(() => { modal.hidden = true; }, 250);
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    }
+
+    openers.forEach((el) => {
+      el.addEventListener("click", openModal);
+      // 鍵盤操作（聯絡頁的容器是 role="button" tabindex="0"）
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+          e.preventDefault();
+          openModal();
+        }
+      });
+    });
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+    // 點擊背景關閉
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // ESC 關閉
+    document.addEventListener("keydown", (e) => {
+      if ((e.key === "Escape" || e.key === "Esc") && !modal.hidden) closeModal();
+    });
+  }
+
   /* ---------- 初始化 ---------- */
   bindContact();
   bindPayment();
   renderPayments();
   renderNews();
   bindShare();
+  bindQrModal();
   if (form && itemList) refreshForm();
   showRoute(getRoute());
 })();

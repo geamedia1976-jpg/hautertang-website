@@ -425,8 +425,9 @@ img{max-width:100%;display:block;}
   position:fixed;inset:0;z-index:120;background:rgba(46,42,38,.72);
   display:flex;align-items:center;justify-content:center;padding:1.2rem;
   opacity:0;transition:opacity .25s;
+  pointer-events:none;          /* 未開啟時不攔截點擊（雙重保險） */
 }
-.qr-modal.show{opacity:1;}
+.qr-modal.show{opacity:1;pointer-events:auto;}
 /* 修正：作者樣式的 display:flex 會壓過瀏覽器預設的 [hidden]{display:none}，
    導致彈窗在 hidden 狀態下仍全螢幕覆蓋（opacity:0 看不見）並吃掉所有點擊。
    此規則特異性 (0,2,0) 高於 .qr-modal (0,1,0)，可正確隱藏。 */
