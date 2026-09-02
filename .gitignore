@@ -7,6 +7,9 @@
 preview-*.png
 check-style.png
 m-*.png
+screen-*.png
+live-*.png
+shot-*.png
 *.patch
 *.zip
 
