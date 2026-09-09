@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# 不要爬後端 API 與內部路徑
+Disallow: /api/
+
+Sitemap: https://www.hauterglobal.com/sitemap.xml
