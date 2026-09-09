@@ -66,19 +66,36 @@ Commit：`7753bf3`（尚未推送，等你確認）
 
 ### 加這兩筆
 
-| Type | Name | Target | Proxy status |
-|---|---|---|---|
-| `CNAME` | `www` | `cname.vercel-dns.com` | **DNS only（灰色雲）** |
-| `CNAME` | `@` | `cname.vercel-dns.com` | **DNS only（灰色雲）** |
+| # | Type | Name | Content | Proxy status |
+|---|---|---|---|---|
+| 1 | `A` | `@` | `76.76.21.21` | **DNS only（灰色雲）** |
+| 2 | `CNAME` | `www` | `cname.vercel-dns.com` | **DNS only（灰色雲）** |
+
+TTL 都用 Auto。
 
 > **⚠️ Proxy status 一定要點開改成灰色雲的「DNS only」**
-> 如果是橘色雲（Proxied），Cloudflare 會擋住 Vercel 簽 SSL 憑證，
-> 而且「Flexible SSL + Vercel 自動轉 HTTPS」會造成無限轉址，網站會打不開。
+> 預設會是橘色雲（Proxied）。開著的話 Cloudflare 會自己攔下 SSL 驗證，
+> Vercel 簽不出 Let's Encrypt 憑證，網域會一直卡在 `Invalid Configuration`。
+
+**為什麼 apex 用 A record 而不是 CNAME？**
+`76.76.21.21` 是 Vercel 的 anycast IP，任何 DNS 商都吃；
+CNAME 放在 apex 要靠各家支援 CNAME flattening，比較容易出狀況。
+`www` 用 CNAME 則是 Vercel 官方建議（走 `cname.vercel-dns.com`，
+Vercel 日後調整架構時不用你改記錄）。
+
+> **小技巧：建議先在 Vercel 加網域（第四節），Vercel 會直接列出它要的 DNS 值，
+> 再回 Cloudflare 照抄**——比憑記憶填 IP 可靠。
 
 ### 順便確認一件事
 
 左邊 **SSL/TLS** → **Overview** → 加密模式選 **Full** 或 **Full (strict)**。
 （不要選 Flexible）
+
+### 如果 Cloudflare 已經自動幫你建了記錄
+
+有些情況下 Cloudflare 會自動產生 `www` 的 A record 或其他預設記錄。
+**同一個 hostname 不要有兩筆互相衝突的記錄**（例如 www 同時有 A 和 CNAME），
+會造成時好時壞。看到多餘的就刪掉。
 
 ---
 
@@ -87,11 +104,17 @@ Commit：`7753bf3`（尚未推送，等你確認）
 1. 登入 https://vercel.com → 進 `hautertang-website` 專案
 2. **Settings** → **Domains**
 3. 輸入 `www.hauterglobal.com` → `Add`
+   （Vercel 這時會列出它要的 DNS 值，可以先抄下來）
 4. 再輸入 `hauterglobal.com` → `Add`
 5. Vercel 會自動簽 SSL 憑證（通常 1～5 分鐘）
 
-建議把 **`www.hauterglobal.com` 設為主要網址**（按它右邊的 ⋯ → Set as Primary），
-另一個自動導過來，網址才不會有兩種版本。
+### 把 www 設為主要網址
+
+在 Domains 列表點 `www.hauterglobal.com` 右邊的 **⋯** → **Set as Primary**。
+Vercel 會自動把 `hauterglobal.com` 用 **308 永久轉址**導到 `www`，
+這樣網址只有一種版本，對 SEO 和分享都好。
+
+> 順序建議：先在 Vercel 加網域（會拿到確切 DNS 值）→ 再回 Cloudflare 填。
 
 ### Vercel 環境變數（**建議設，雙保險**）
 
@@ -170,20 +193,29 @@ www.hauterglobal.com.   （無任何記錄）              ← 還沒設 ⚠️
       ↓
 2. 我推送 → Vercel 自動部署第一終極版
       ↓
-3. 你在 Cloudflare 加那兩筆 CNAME（灰色雲）
+3. 你在 Vercel 加兩個網域（先拿到確切 DNS 值）
       ↓
-4. 你在 Vercel 加兩個網域、設 www 為主要
+4. 你在 Cloudflare 加 A + CNAME 兩筆（灰色雲）
       ↓
 5. 等 5 分鐘 SSL 簽好 → 開 https://www.hauterglobal.com/ 驗收
 ```
 
-步驟 3 和 4 順序可以互換，也可以先做，不影響。
+步驟 3 和 4 順序可以互換，先看 Vercel 給的值再填 Cloudflare 最穩。
 
 ---
 
 ## 八、上線後怎麼驗收
 
-開 https://www.hauterglobal.com/ 檢查這 8 項：
+### 先確認 DNS 生效（我可以幫你跑）
+
+```
+dig www.hauterglobal.com +short          → 應出現 cname.vercel-dns.com
+dig hauterglobal.com A +short            → 應出現 76.76.21.21（或其他 Vercel IP）
+```
+
+或者開 https://dnschecker.org 輸入 `www.hauterglobal.com` 看全球是否都生效。
+
+### 然後開 https://www.hauterglobal.com/ 檢查這 8 項
 
 - [ ] 網址列出現 🔒 鎖頭（SSL 正常）
 - [ ] 導覽列**沒有**「太素觀」
