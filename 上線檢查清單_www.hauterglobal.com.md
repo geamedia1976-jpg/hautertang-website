@@ -240,6 +240,75 @@ dig hauterglobal.com A +short            → 應出現 76.76.21.21（或其他 V
 
 ---
 
+## 九點五、Google 搜尋（2026-09-09 實測與設定）
+
+### 實測：現在搜「浩德堂」找得到我們嗎？
+
+**找不到。** 這是正常的，原因有兩個：
+
+1. **網域才上線 1 天**，Google 還沒來爬。新網域從上線到被收錄通常要 **3 天～2 週**。
+2. **「浩德堂」是通用詞**，目前搜尋結果前幾名都是同名公司
+   （武漢浩德堂生物科技、河南浩德堂中醫館等），本來就很競爭。
+
+### 我已經補上的 SEO 基礎建設（已上線）
+
+```
+robots.txt      允許全站爬取，排除 /api/，標註 sitemap 位置
+sitemap.xml     提交首頁（本站為 hash 路由單頁，只有一個正式 URL）
+canonical       https://www.hauterglobal.com/
+結構化資料       schema.org Organization，讓 Google 認識「浩德堂」這個實體
+```
+
+### 你要做的：Google Search Console（最關鍵，5 分鐘）
+
+這一步是把「等幾週」變成「等幾天」的關鍵。
+
+1. 開 https://search.google.com/search-console → **開始使用**
+2. 選右邊的 **網域** → 輸入 `hauterglobal.com`
+   （選「網域」不是「網址前置字元」，網域版會涵蓋 www 與所有子網域）
+3. 驗證方式選 **DNS 記錄** → 複製那串 `google-site-verification=...`
+4. 回 Cloudflare → **DNS** → **Add record**：
+   - Type：`TXT`
+   - Name：`@`
+   - Content：（貼上剛複製那串）
+   - TTL：Auto
+5. 回 Search Console 按 **驗證**（可能要等幾分鐘）
+6. 左邊 **Sitemap** → 輸入 `sitemap.xml` → **提交**
+7. 上方搜尋列輸入 `https://www.hauterglobal.com/` → 按 **要求建立索引**
+
+### 另一個高槓桿：Google 我的商家
+
+對宮廟來說，**Google 我的商家（Google Business Profile）比自然搜尋更有效**——
+它會出現在 Google 地圖與「附近的廟」這類搜尋，而且是可控的。
+
+https://www.google.com/business/ → 填名稱「浩德堂」、類別選「寺廟」、地址、電話、照片。
+需要實體地址與電話審核（會寄明信片），約 1～2 週。
+
+### 關鍵字預期（務實版）
+
+| 搜尋什麼 | 排得上嗎 | 時間 |
+|---|---|---|
+| `浩德堂 植福田` | ✅ 很高（幾乎沒有競爭者） | 收錄後數天 |
+| `浩德堂 線上共參` | ✅ 很高 | 收錄後數天 |
+| `浩德堂 hauterglobal` | ✅ 高 | 收錄後數天 |
+| `浩德堂 網站` | 🟡 中等 | 數週 |
+| `浩德堂`（單搜） | 🔴 難，同名公司多 | 不一定 |
+
+**結論**：與其拚單搜「浩德堂」，不如讓信眾用組合詞或直接掃 QR Code 找到你。
+QR Code 與 LINE 社群分享會是比 Google 更可靠的流量來源。
+
+### ⚠️ 一個副作用（待你決定）
+
+`.taisu-only` 是 **CSS 視覺隱藏**，文字還在 HTML 原始碼裡。
+實測：正式站 HTML 中「太素觀」仍出現 **16 次**（「銅瓦」0 次，因為是用 JS 過濾掉的）。
+
+→ Google **爬得到**這段文字，搜「太素觀」有可能出現我們網站。
+
+要真隱藏得把文字從 HTML 移除，但會失去「一鍵恢復」的便利。
+要處理的話跟我說一聲，我改。
+
+---
+
 ## 附錄：本次異動檔案
 
 ```
@@ -251,4 +320,7 @@ lib/items.js                  過濾「太素觀供養銅瓦」群組
 css/style.css                 .taisu-only 隱藏規則 + 按鈕間距
 api/_env.js                   SITE_URL fallback 改新網域
 assets/images/site-qr.png     重做為新網址 QR（已解碼驗證）
+robots.txt                    SEO：允許爬取 + 標 sitemap
+sitemap.xml                   SEO：提交首頁 URL
+index.html（第二批）           canonical + schema.org Organization 結構化資料
 ```
