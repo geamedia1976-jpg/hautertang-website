@@ -29,5 +29,9 @@ preview/
 .env.*
 !.env.example
 
+# V2（紫微命盤 + 會員系統）：只存在於 v2-dev 分支，main 上不追蹤
+# 用戶明確指示 V2 等她說「更新」才上線，這行是防止誤推的保險
+v2/
+
 # Node.js
 node_modules/
