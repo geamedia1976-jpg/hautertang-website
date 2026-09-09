@@ -13,6 +13,12 @@ shot-*.png
 *.patch
 *.zip
 
+# 驗證用截圖（除錯過程產生，不進版控）
+btn-*.png
+hide-*.png
+release-shots/
+assets/images/site-qr.old-vercel.png
+
 # 原圖備份與中間產物（不部署，網站只使用優化後的 hero/about/taisu/line-qr.jpg）
 assets/images/*-original.jpg
 assets/images/taisu-roof.jpg
