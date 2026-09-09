@@ -11,13 +11,14 @@
   <meta property="og:site_name" content="浩德堂">
   <meta property="og:title" content="浩德堂 ｜ 讓敬心有處安住，讓善念有路可回">
   <meta property="og:description" content="即使身在遠方，也仍可透過一份真誠的心，與善念同行，共植福田，共成聖業。">
-  <meta property="og:image" content="https://hautertang-website.vercel.app/assets/images/hero.jpg">
-  <meta property="og:url" content="https://hautertang-website.vercel.app/">
+  <meta property="og:image" content="https://www.hauterglobal.com/assets/images/hero.jpg">
+  <meta property="og:url" content="https://www.hauterglobal.com/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238a1c1c'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%23f5e6c8' font-family='serif'%3E德%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body>
 
@@ -34,7 +35,7 @@
       <nav class="site-nav" id="siteNav">
         <a href="#home" data-route="home">首頁</a>
         <a href="#about" data-route="about">浩德堂緣起</a>
-        <a href="#taisu" data-route="taisu">太素觀</a>
+        <a href="#taisu" class="taisu-only" data-route="taisu">太素觀</a>
         <a href="#online" data-route="online">線上共參</a>
         <a href="#donate" data-route="donate">隨喜護持</a>
         <a href="#news" data-route="news">最新消息</a>
@@ -82,7 +83,7 @@
             <h3>浩德堂緣起</h3>
             <p>先理解這條線的根、法緣與修持來源。</p>
           </a>
-          <a href="#taisu" class="entry-card" data-route="taisu">
+          <a href="#taisu" class="entry-card taisu-only" data-route="taisu">
             <span class="entry-no">02</span>
             <h3>太素觀</h3>
             <p>看目前共參聖業、現況與後續方向。</p>
@@ -100,7 +101,7 @@
           <a href="#news" class="entry-card" data-route="news">
             <span class="entry-no">05</span>
             <h3>最新消息</h3>
-            <p>後續固定承接共修公告與太素觀進度更新。</p>
+            <p>後續固定承接共修公告與建設進度更新。</p>
           </a>
           <a href="#contact" class="entry-card" data-route="contact">
             <span class="entry-no">06</span>
@@ -152,8 +153,8 @@
         <p class="quote-line">浩德堂所尊奉的，不只是修持的形式，更是一種提醒：在忙碌世間裡，仍然要守住內心的善、恭敬與清明。</p>
       </div>
 
-      <!-- 太素觀現況 -->
-      <div class="section section-soft">
+      <!-- 太素觀現況（2026-09 暫時收起；恢復方式見 js/config.js FEATURES.taisu） -->
+      <div class="section section-soft taisu-only">
         <div class="section-head">
           <h2 class="section-title">太素觀 ｜ 共參聖業現況</h2>
         </div>
@@ -219,17 +220,17 @@
 
       <div class="page-cta">
         <a href="#online" class="btn btn-primary" data-route="online">我要線上共參</a>
-        <a href="#taisu" class="btn btn-ghost" data-route="taisu">了解太素觀</a>
+        <a href="#taisu" class="btn btn-ghost taisu-only" data-route="taisu">了解太素觀</a>
       </div>
       <p class="closing">若你與浩德堂有緣，願你在此得一份清淨、安定與善念的連結。</p>
     </section>
 
     <!-- ========== 太素觀 ========== -->
-    <section class="page" id="page-taisu" hidden>
+    <section class="page taisu-only" id="page-taisu" hidden>
       <div class="page-hero taisu-hero">
         <p class="eyebrow">花蓮壽豐 ｜ 浩德堂共參聖業</p>
         <h1>太素觀</h1>
-        <p class="lead">太素觀是目前浩德堂共參的重要聖業之一，共同成就聖業的承接之處。</p>
+        <p class="lead">太素觀目前暫時收起共參；浩德堂植福田與相關修持仍持續運作，歡迎以福田方式持續同行。</p>
       </div>
 
       <div class="section">
@@ -305,10 +306,10 @@
       <div class="tab-panel" data-panel="how" hidden>
         <h2 class="block-title">如何進行</h2>
         <ol class="step-list">
-          <li><b>先了解浩德堂與太素觀</b><span>先理解這份緣起、修持方向與太素觀目前所承接的聖業，讓共參建立在清楚與恭敬之上。</span></li>
+          <li><b>先了解浩德堂</b><span>先理解這份緣起、修持方向與目前的運作方式，讓共參建立在清楚與恭敬之上。</span></li>
           <li><b>選擇共參方向</b><span>依自身因緣與發心，選擇線上禮敬、共修通知、祈福登記或功德迴向等不同入口。</span></li>
           <li><b>留下必要資訊</b><span>浩德堂僅收取承接所需的必要資料，不過度蒐集，並以恭敬、清楚、保密為原則。</span></li>
-          <li><b>由浩德堂後續承接</b><span>包括共修通知、祈福安排、迴向說明，以及後續若有法會或太素觀進度更新，也可持續連結回來。</span></li>
+          <li><b>由浩德堂後續承接</b><span>包括共修通知、祈福安排、迴向說明，以及後續若有新活動或建設進度更新，也可持續連結回來。</span></li>
         </ol>
       </div>
 
@@ -333,13 +334,13 @@
       <div class="page-hero">
         <p class="eyebrow">植福田與供養登記入口</p>
         <h1>隨喜護持 ｜ 共植福田</h1>
-        <p class="lead">方向先分清楚：浩德堂植福田與太素觀供養，讓每個人的發心更清楚、更安定。</p>
+        <p class="lead">浩德堂植福田持續運作，歡迎以福田方式同行；發心清楚，方向自然安定。</p>
       </div>
 
       <!-- 登記表單 -->
       <div class="section section-soft">
         <h2 class="block-title">植福田 / 供養登記</h2>
-        <p class="block-note">可一次勾選多項（例如供養銅瓦 4 片 + 供花），金額會自動加總；只需留下稱呼與聯絡方式即可登記，送出後由浩德堂後續承接。</p>
+        <p class="block-note">可一次勾選多項（例如供花 + 供果），金額會自動加總；只需留下稱呼與聯絡方式即可登記，送出後由浩德堂後續承接。</p>
 
         <div class="form-layout">
           <form id="donateForm" class="donate-form" novalidate>
@@ -406,10 +407,10 @@
         <p class="quote-line">共植福田不是交易，也不是把善念做成交換；而是一份願意共成聖業的發心。</p>
         <h3 class="sub-block-title">如何承接</h3>
         <ol class="step-list">
-          <li><b>先分清楚是哪一條方向</b><span>是想共參太素觀銅瓦，還是想參與浩德堂植福田（禮敬上香、供花、供果、供燈）。</span></li>
-          <li><b>確認項目與單位</b><span>太素觀銅瓦以每單位 500 元承接；浩德堂供花、供果、供燈各 500 元；禮敬上香為隨喜。</span></li>
-          <li><b>以清楚方式留下資料</b><span>後續只收承接需要的基本資料，並把太素觀銅瓦與浩德堂植福田分流整理，不混在一起。</span></li>
-          <li><b>後續持續連結</b><span>之後若有太素觀進度、共修消息或相關承接安排，也可再回到網站與後續入口持續連結。</span></li>
+          <li><b>先看清楚方向</b><span>目前承接的是浩德堂植福田（禮敬上香、供花、供果、供燈）。</span></li>
+          <li><b>確認項目與單位</b><span>供花、供果、供燈各 500 元；禮敬上香為隨喜。</span></li>
+          <li><b>以清楚方式留下資料</b><span>後續只收承接需要的基本資料，恭敬、清楚、保密為原則。</span></li>
+          <li><b>後續持續連結</b><span>共修通知、祈福安排與迴向說明都可再回到網站與後續入口持續連結。</span></li>
         </ol>
       </div>
     </section>
@@ -419,7 +420,7 @@
       <div class="page-hero">
         <p class="eyebrow">持續更新 ｜ 持續保持連結</p>
         <h1>最新消息</h1>
-        <p class="lead">這裡持續更新浩德堂與太素觀的共修公告、建設進度與節日祈福安排，讓有緣之人能持續回來，與我們保持一份安定而真實的連結。</p>
+        <p class="lead">這裡持續更新浩德堂的共修公告與節日祈福安排，讓有緣之人能持續回來，與我們保持一份安定而真實的連結。</p>
       </div>
 
       <div class="section">
@@ -607,7 +608,7 @@
       <nav class="footer-nav">
         <a href="#home" data-route="home">首頁</a>
         <a href="#about" data-route="about">浩德堂緣起</a>
-        <a href="#taisu" data-route="taisu">太素觀</a>
+        <a href="#taisu" class="taisu-only" data-route="taisu">太素觀</a>
         <a href="#online" data-route="online">線上共參</a>
         <a href="#donate" data-route="donate">隨喜護持</a>
         <a href="#news" data-route="news">最新消息</a>
@@ -620,10 +621,10 @@
   <!-- 送出成功提示 -->
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="lib/items.js?v=3"></script>
+  <script src="lib/items.js?v=4"></script>
   <script src="js/qrcode.min.js?v=3"></script>
-  <script src="js/config.js?v=9"></script>
-  <script src="js/news.js?v=9"></script>
-  <script src="js/main.js?v=9"></script>
+  <script src="js/config.js?v=10"></script>
+  <script src="js/news.js?v=10"></script>
+  <script src="js/main.js?v=10"></script>
 </body>
 </html>

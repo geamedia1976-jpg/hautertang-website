@@ -10,8 +10,11 @@
 (function () {
   "use strict";
 
-  /* ---------- 路由 ---------- */
-  const routes = ["home", "about", "taisu", "online", "donate", "news", "contact", "payresult"];
+  /* ---------- 路由 ----------
+     ⚠️ "taisu" 暫時移出（2026-09）。移出後的效果：
+        舊連結 #taisu 會被 getRoute() 的 fallback 自動導回首頁，
+        不需要額外寫判斷。恢復時把 "taisu" 加回陣列即可（"about" 後面）。 */
+  const routes = ["home", "about", "online", "donate", "news", "contact", "payresult"];
   const pages = {};
   routes.forEach((r) => (pages[r] = document.getElementById("page-" + r)));
 

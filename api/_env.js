@@ -15,11 +15,12 @@ module.exports = function getEnv() {
     siteUrl: (process.env.SITE_URL || "").trim()
   };
 
-  // 沒設定環境變數時，退回 Vercel 的專案網址推導（僅供 ReturnURL 使用）
+  // 沒設定環境變數時，退回正式網址（2026-09 換網域後的預設值）
+  // ⚠️ 換網域時請一併更新這裡，並在 Vercel 後台設定 SITE_URL 環境變數
+  const DEFAULT_SITE_URL = "https://www.hauterglobal.com";
+
   if (!cfg.siteUrl) {
-    cfg.siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? "https://" + process.env.VERCEL_PROJECT_PRODUCTION_URL
-      : (process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "");
+    cfg.siteUrl = DEFAULT_SITE_URL;
   }
 
   cfg.missing = [];

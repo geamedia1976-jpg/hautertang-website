@@ -5,10 +5,21 @@
 
 const SITE_CONFIG = {
 
+  /* ---------- 功能開關 ----------
+     ⚠️ 太素觀暫時收起（2026-09）。
+     要恢復時：
+       1. 下面 taisu 改回 true
+       2. 移除 index.html 各處的 class="taisu-only"
+          （導覽、頁腳、入口卡、首頁區塊、緣起頁按鈕、#page-taisu）
+       3. js/main.js 的 routes 陣列加回 "taisu" */
+  FEATURES: {
+    taisu: false
+  },
+
   /* ---------- 網站基本資料 ---------- */
   SITE: {
     name: "浩德堂",
-    url: "https://hautertang-website.vercel.app/",   // 網站正式網址（用於分享與 QR Code）
+    url: "https://www.hauterglobal.com/",   // 網站正式網址（用於分享與 QR Code）
     desc: "浩德堂 ｜ 讓敬心有處安住，讓善念有路可回。",
     qrCode: "assets/images/site-qr.png"              // 網站 QR Code 圖片
   },
